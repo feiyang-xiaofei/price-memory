@@ -1,0 +1,206 @@
+/* Price Memory — Content Script Styles */
+
+.pm-badge {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 300px;
+  background: #0f0f0f;
+  color: #e8e8e8;
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.06);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 13px;
+  z-index: 2147483647;
+  overflow: hidden;
+  animation: pm-slide-in 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.3s ease;
+  backdrop-filter: blur(20px);
+}
+
+.pm-badge.pm-badge-hidden {
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+}
+
+.pm-badge.pm-badge-compact {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.pm-badge.pm-badge-compact * {
+  display: none !important;
+}
+
+.pm-badge.pm-badge-compact::after {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 24px;
+  margin: 14px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300ff88' stroke-width='2'%3E%3Cpath d='M12 2L2 7l10 5 10-5-10-5z'/%3E%3Cpath d='M2 17l10 5 10-5'/%3E%3Cpath d='M2 12l10 5 10-5'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+@keyframes pm-slide-in {
+  from { opacity: 0; transform: translateY(30px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.pm-badge-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px 8px;
+}
+
+.pm-logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #00ff88;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.pm-close {
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.pm-close:hover {
+  color: #fff;
+}
+
+.pm-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  margin: 0 10px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.pm-status-great {
+  background: rgba(0, 255, 136, 0.1);
+  color: #00ff88;
+}
+
+.pm-status-good {
+  background: rgba(0, 200, 255, 0.1);
+  color: #00c8ff;
+}
+
+.pm-status-neutral {
+  background: rgba(255, 255, 255, 0.05);
+  color: #999;
+}
+
+.pm-status-bad {
+  background: rgba(255, 80, 80, 0.1);
+  color: #ff5050;
+}
+
+.pm-status-icon {
+  font-size: 11px;
+}
+
+.pm-price-range {
+  padding: 14px 14px 6px;
+}
+
+.pm-range-bar {
+  position: relative;
+  height: 6px;
+  background: #1a1a1a;
+  border-radius: 3px;
+  overflow: visible;
+}
+
+.pm-range-fill {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #00ff88, #00c8ff);
+  border-radius: 3px;
+  opacity: 0.3;
+}
+
+.pm-range-marker {
+  position: absolute;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
+  transition: left 0.3s ease;
+}
+
+.pm-range-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 11px;
+  color: #666;
+}
+
+.pm-views {
+  padding: 6px 14px;
+  font-size: 11px;
+  color: #666;
+}
+
+.pm-category-avg {
+  padding: 4px 14px;
+  font-size: 11px;
+  color: #888;
+}
+
+.pm-category-avg strong {
+  color: #00c8ff;
+}
+
+.pm-history-section {
+  padding: 10px 14px 14px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  margin-top: 8px;
+}
+
+.pm-history-title {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.pm-history-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 0;
+  font-size: 12px;
+}
+
+.pm-history-date {
+  color: #666;
+}
+
+.pm-history-price {
+  color: #e8e8e8;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}

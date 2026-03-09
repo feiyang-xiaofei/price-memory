@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="bg128" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#0d0d1a"/>
+    </linearGradient>
+    <radialGradient id="glow128" cx="50%" cy="53%" r="35%">
+      <stop offset="0%" stop-color="#00ff88" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#00ff88" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softglow128">
+      <feGaussianBlur stdDeviation="3"/>
+    </filter>
+    <filter id="coreglow128">
+      <feGaussianBlur stdDeviation="1.5"/>
+    </filter>
+  </defs>
+
+  <!-- Dark background with rounded corners -->
+  <rect width="128" height="128" rx="20" fill="url(#bg128)"/>
+
+  <!-- Large ambient glow -->
+  <ellipse cx="64" cy="68" rx="42" ry="36" fill="url(#glow128)"/>
+
+  <!-- Layer 1: outermost (ghost layer) -->
+  <polygon points="64,12 116,68 64,124 12,68"
+           fill="none" stroke="#00ff88" stroke-opacity="0.12" stroke-width="1.5"
+           stroke-dasharray="4,3"/>
+
+  <!-- Layer 2 -->
+  <polygon points="64,18 110,68 64,118 18,68"
+           fill="none" stroke="#00ff88" stroke-opacity="0.2" stroke-width="1.8"/>
+
+  <!-- Layer 3 -->
+  <polygon points="64,26 102,68 64,110 26,68"
+           fill="#00ff88" fill-opacity="0.02" stroke="#00ff88" stroke-opacity="0.3" stroke-width="2"/>
+
+  <!-- Layer 4 -->
+  <polygon points="64,34 94,68 64,102 34,68"
+           fill="#00ff88" fill-opacity="0.04" stroke="#00ff88" stroke-opacity="0.42" stroke-width="2.2"/>
+
+  <!-- Layer 5 -->
+  <polygon points="64,42 86,68 64,94 42,68"
+           fill="#00ff88" fill-opacity="0.06" stroke="#00ff88" stroke-opacity="0.58" stroke-width="2.4"/>
+
+  <!-- Layer 6 -->
+  <polygon points="64,50 78,68 64,86 50,68"
+           fill="#00ff88" fill-opacity="0.1" stroke="#00ff88" stroke-opacity="0.75" stroke-width="2.5"/>
+
+  <!-- Layer 7: innermost prism (brightest) -->
+  <polygon points="64,56 72,68 64,80 56,68"
+           fill="#00ff88" fill-opacity="0.2" stroke="#00ff88" stroke-opacity="1" stroke-width="2.8"/>
+
+  <!-- Horizontal "memory bus" lines across the diamond -->
+  <line x1="22" y1="58" x2="106" y2="58" stroke="#00ff88" stroke-opacity="0.06" stroke-width="0.7"/>
+  <line x1="18" y1="68" x2="110" y2="68" stroke="#00ff88" stroke-opacity="0.1" stroke-width="0.8"/>
+  <line x1="22" y1="78" x2="106" y2="78" stroke="#00ff88" stroke-opacity="0.06" stroke-width="0.7"/>
+
+  <!-- Small "data node" dots on vertices of middle layers -->
+  <circle cx="64" cy="34" r="1.5" fill="#00ff88" fill-opacity="0.4"/>
+  <circle cx="94" cy="68" r="1.5" fill="#00ff88" fill-opacity="0.4"/>
+  <circle cx="64" cy="102" r="1.5" fill="#00ff88" fill-opacity="0.4"/>
+  <circle cx="34" cy="68" r="1.5" fill="#00ff88" fill-opacity="0.4"/>
+
+  <!-- Center glow (soft outer) -->
+  <circle cx="64" cy="68" r="8" fill="#00ff88" fill-opacity="0.35" filter="url(#softglow128)"/>
+  <!-- Center glow (sharp core) -->
+  <circle cx="64" cy="68" r="4" fill="#00ff88" fill-opacity="0.8" filter="url(#coreglow128)"/>
+  <circle cx="64" cy="68" r="2" fill="#ffffff" fill-opacity="0.75"/>
+
+  <!-- Tiny "$" hint in the core -->
+  <text x="64" y="71" text-anchor="middle" font-family="Arial, sans-serif"
+        font-size="7" font-weight="bold" fill="#ffffff" fill-opacity="0.6">$</text>
+</svg>

@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48">
+  <defs>
+    <linearGradient id="bg48" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#0d0d1a"/>
+    </linearGradient>
+    <radialGradient id="glow48" cx="50%" cy="54%" r="30%">
+      <stop offset="0%" stop-color="#00ff88" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#00ff88" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="blur48">
+      <feGaussianBlur stdDeviation="1.5"/>
+    </filter>
+  </defs>
+  <!-- Dark background -->
+  <rect width="48" height="48" rx="8" fill="url(#bg48)"/>
+  <!-- Subtle ambient glow behind the diamond -->
+  <ellipse cx="24" cy="26" rx="14" ry="12" fill="url(#glow48)"/>
+  <!-- Layer 1: outermost diamond (dimmest) -->
+  <polygon points="24,6 42,26 24,46 6,26"
+           fill="none" stroke="#00ff88" stroke-opacity="0.2" stroke-width="1.2"/>
+  <!-- Layer 2 -->
+  <polygon points="24,10 38,26 24,42 10,26"
+           fill="none" stroke="#00ff88" stroke-opacity="0.35" stroke-width="1.3"/>
+  <!-- Layer 3 -->
+  <polygon points="24,14 34,26 24,38 14,26"
+           fill="#00ff88" fill-opacity="0.04" stroke="#00ff88" stroke-opacity="0.55" stroke-width="1.4"/>
+  <!-- Layer 4 -->
+  <polygon points="24,18 30,26 24,34 18,26"
+           fill="#00ff88" fill-opacity="0.08" stroke="#00ff88" stroke-opacity="0.75" stroke-width="1.5"/>
+  <!-- Layer 5: innermost diamond (brightest) -->
+  <polygon points="24,22 27,26 24,30 21,26"
+           fill="#00ff88" fill-opacity="0.2" stroke="#00ff88" stroke-opacity="1" stroke-width="1.6"/>
+  <!-- Horizontal line across middle to suggest "memory rows" -->
+  <line x1="10" y1="26" x2="38" y2="26" stroke="#00ff88" stroke-opacity="0.12" stroke-width="0.6"/>
+  <!-- Center glow -->
+  <circle cx="24" cy="26" r="2.5" fill="#00ff88" fill-opacity="0.9" filter="url(#blur48)"/>
+  <circle cx="24" cy="26" r="1.5" fill="#ffffff" fill-opacity="0.7"/>
+</svg>

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Price Memory — Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+      colors: {
+        surface: { 50: '#fafafa', 100: '#f5f5f5', 200: '#e5e5e5', 800: '#1a1a1a', 900: '#0a0a0a', 950: '#050505' },
+        accent: { DEFAULT: '#00ff88', dim: '#00cc6a', glow: 'rgba(0,255,136,0.15)' },
+        blue: { DEFAULT: '#00c8ff', dim: '#0099cc' },
+        warn: { DEFAULT: '#ff5050' },
+        purple: { DEFAULT: '#a050ff' }
+      }
+    }
+  }
+}
+</script>
+<style>
+  body { background: #050505; color: #e8e8e8; font-family: 'Inter', system-ui, sans-serif; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+  .glow-green { box-shadow: 0 0 30px rgba(0,255,136,0.08); }
+  .glow-blue { box-shadow: 0 0 30px rgba(0,200,255,0.08); }
+  .glass { background: rgba(255,255,255,0.02); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
+  .trend-badge { font-variant-numeric: tabular-nums; }
+  @keyframes fadeUp { from { opacity:0; transform: translateY(16px); } to { opacity:1; transform: translateY(0); } }
+  .fade-up { animation: fadeUp 0.5s cubic-bezier(0.16,1,0.3,1) both; }
+  .fade-up-1 { animation-delay: 0.05s; }
+  .fade-up-2 { animation-delay: 0.1s; }
+  .fade-up-3 { animation-delay: 0.15s; }
+  .fade-up-4 { animation-delay: 0.2s; }
+  .fade-up-5 { animation-delay: 0.25s; }
+  .price-line { height: 3px; border-radius: 2px; }
+  .nav-item { transition: all 0.15s; }
+  .nav-item:hover { background: rgba(255,255,255,0.04); }
+  .nav-item.active { background: rgba(0,255,136,0.06); color: #00ff88; border-color: rgba(0,255,136,0.2); }
+  .product-row { transition: all 0.15s; }
+  .product-row:hover { background: rgba(255,255,255,0.03); }
+  .sparkline { display: flex; align-items: flex-end; gap: 1px; height: 28px; }
+  .sparkline-bar { width: 4px; border-radius: 1px; transition: height 0.3s ease; min-height: 2px; }
+  .category-pill { transition: all 0.15s; cursor: pointer; }
+  .category-pill:hover { background: rgba(255,255,255,0.08); }
+  .category-pill.active { background: rgba(0,255,136,0.12); color: #00ff88; border-color: rgba(0,255,136,0.3); }
+  .insight-card { position: relative; overflow: hidden; }
+  .insight-card::before { content: ''; position: absolute; top:0; left:0; right:0; height: 1px; background: linear-gradient(90deg, transparent, rgba(0,255,136,0.3), transparent); }
+  table img { width: 40px !important; height: 40px !important; max-width: 40px !important; max-height: 40px !important; }
+</style>
+</head>
+<body class="min-h-screen">
+<!-- SHELL: sidebar + main layout -->
+<div class="flex min-h-screen" id="app">
+  <!-- Sidebar -->
+  <aside class="w-[240px] border-r border-white/5 flex flex-col p-4 sticky top-0 h-screen">
+    <!-- Brand -->
+    <div class="flex items-center gap-2.5 px-3 mb-8 mt-2">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#00ff88" stroke-width="2">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+      <span class="text-[15px] font-bold text-white tracking-tight">Price Memory</span>
+    </div>
+    <!-- Nav -->
+    <nav class="flex flex-col gap-1">
+      <a href="#" class="nav-item active flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium border border-transparent" data-page="dashboard">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+      </a>
+      <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium text-[#888] border border-transparent" data-page="products">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        All Products
+      </a>
+      <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium text-[#888] border border-transparent" data-page="drops">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+        Price Drops
+      </a>
+      <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium text-[#888] border border-transparent" data-page="insights">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Smart Insights
+        <span class="ml-auto text-[9px] font-bold tracking-wider bg-[rgba(160,80,255,0.15)] text-[#a050ff] px-1.5 py-0.5 rounded">PRO</span>
+      </a>
+      <a href="#" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium text-[#888] border border-transparent" data-page="dejavu">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        D&eacute;j&agrave; Vu
+        <span class="ml-auto text-[9px] font-bold tracking-wider bg-[rgba(160,80,255,0.15)] text-[#a050ff] px-1.5 py-0.5 rounded">PRO</span>
+      </a>
+    </nav>
+    <!-- Bottom section -->
+    <div class="mt-auto">
+      <div class="glass rounded-xl p-4 mb-3">
+        <div class="text-[10px] uppercase tracking-wider text-[#666] mb-2">Lifetime Savings</div>
+        <div class="text-[28px] font-black text-accent leading-none" id="sidebarSavings">$0</div>
+        <div class="text-[11px] text-[#666] mt-1">across <span id="sidebarAlerts">0</span> price alerts</div>
+      </div>
+      <div class="px-3 text-[11px] text-[#444]">v1.0.0 &middot; Extension active</div>
+    </div>
+  </aside>
+  <!-- Main -->
+  <main class="flex-1 min-w-0 overflow-y-auto p-6 lg:p-8" id="main">
+    <!-- Page: Dashboard -->
+    <div id="page-dashboard">
+      <!-- Top bar -->
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h1 class="text-[22px] font-bold text-white tracking-tight">Dashboard</h1>
+          <p class="text-[13px] text-[#666] mt-0.5">Your personal price intelligence across all retailers</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="glass rounded-lg px-3 py-2 text-[12px] text-[#888]">
+            <span class="inline-block w-2 h-2 bg-accent rounded-full mr-1.5 animate-pulse"></span>
+            Tracking active
+          </div>
+        </div>
+      </div>
+      <!-- Stats cards -->
+      <div class="grid grid-cols-4 gap-4 mb-8" id="statsRow">
+        <!-- filled by JS -->
+      </div>
+      <!-- Charts row -->
+      <div class="grid grid-cols-3 gap-4 mb-8">
+        <div class="col-span-2 glass rounded-2xl p-5">
+          <div class="text-[11px] uppercase tracking-wider text-[#555] mb-4">Price Activity — Last 30 Days</div>
+          <div id="chartActivity" style="height:260px;"></div>
+        </div>
+        <div class="glass rounded-2xl p-5">
+          <div class="text-[11px] uppercase tracking-wider text-[#555] mb-4">Spending by Category</div>
+          <div id="chartCategory" style="height:260px;"></div>
+        </div>
+      </div>
+      <!-- Recent + Drops split -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="glass rounded-2xl p-5">
+          <div class="flex items-center justify-between mb-4">
+            <div class="text-[11px] uppercase tracking-wider text-[#555]">Recent Price Changes</div>
+            <button class="text-[11px] text-accent hover:underline" onclick="switchPage('drops')">View all</button>
+          </div>
+          <div id="recentDropsList"></div>
+        </div>
+        <div class="glass rounded-2xl p-5">
+          <div class="flex items-center justify-between mb-4">
+            <div class="text-[11px] uppercase tracking-wider text-[#555]">Top Watched Items</div>
+            <button class="text-[11px] text-accent hover:underline" onclick="switchPage('dejavu')">View all</button>
+          </div>
+          <div id="watchedList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Page: All Products -->
+    <div id="page-products" class="hidden">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-[22px] font-bold text-white tracking-tight">All Products</h1>
+          <p class="text-[13px] text-[#666] mt-0.5" id="productCount"></p>
+        </div>
+        <div class="flex gap-2" id="categoryFilters"></div>
+      </div>
+      <div class="glass rounded-2xl overflow-hidden">
+        <table class="w-full table-fixed">
+          <thead>
+            <tr class="border-b border-white/5 text-[10px] uppercase tracking-wider text-[#555]">
+              <th class="text-left py-3 px-5 font-medium" style="width:40%">Product</th>
+              <th class="text-left py-3 px-4 font-medium" style="width:12%">Retailer</th>
+              <th class="text-right py-3 px-4 font-medium" style="width:10%">Current</th>
+              <th class="text-right py-3 px-4 font-medium" style="width:10%">Lowest</th>
+              <th class="text-right py-3 px-4 font-medium" style="width:10%">Highest</th>
+              <th class="text-center py-3 px-4 font-medium" style="width:12%">Trend</th>
+              <th class="text-center py-3 px-4 font-medium" style="width:6%">Views</th>
+            </tr>
+          </thead>
+          <tbody id="productTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Page: Price Drops -->
+    <div id="page-drops" class="hidden">
+      <div class="mb-6">
+        <h1 class="text-[22px] font-bold text-white tracking-tight">Price Drops</h1>
+        <p class="text-[13px] text-[#666] mt-0.5">Items that have dropped in price since you first saw them</p>
+      </div>
+      <div id="dropsGrid" class="grid grid-cols-3 gap-4"></div>
+    </div>
+
+    <!-- Page: Smart Insights -->
+    <div id="page-insights" class="hidden">
+      <div class="mb-6">
+        <h1 class="text-[22px] font-bold text-white tracking-tight">Smart Insights</h1>
+        <p class="text-[13px] text-[#666] mt-0.5">AI-powered analysis of your browsing and pricing patterns</p>
+      </div>
+      <div id="insightsGrid" class="grid grid-cols-2 gap-4"></div>
+      <div id="insightsUpgrade" class="hidden flex flex-col items-center justify-center py-20">
+        <div class="text-[40px] mb-4 opacity-30">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#a050ff" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        </div>
+        <div class="text-[18px] font-bold text-white mb-2">Smart Insights is a Pro feature</div>
+        <p class="text-[13px] text-[#666] max-w-md text-center mb-6">Get AI-powered price analysis, volatility detection, buying advice, and spending breakdowns across all your tracked products.</p>
+        <a href="https://YOUR_GUMROAD_URL" target="_blank" class="inline-flex items-center gap-2 bg-[rgba(160,80,255,0.15)] border border-[rgba(160,80,255,0.3)] text-[#a050ff] font-semibold text-[13px] px-5 py-2.5 rounded-lg hover:bg-[rgba(160,80,255,0.25)] transition-all">
+          Upgrade to Pro
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Page: Deja Vu -->
+    <div id="page-dejavu" class="hidden">
+      <div class="mb-6">
+        <h1 class="text-[22px] font-bold text-white tracking-tight">Price D&eacute;j&agrave; Vu</h1>
+        <p class="text-[13px] text-[#666] mt-0.5">Items you keep coming back to — you clearly want these</p>
+      </div>
+      <div id="dejavuList" class="flex flex-col gap-4"></div>
+      <div id="dejavuUpgrade" class="hidden flex flex-col items-center justify-center py-20">
+        <div class="text-[40px] mb-4 opacity-30">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#a050ff" stroke-width="1.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <div class="text-[18px] font-bold text-white mb-2">D&eacute;j&agrave; Vu is a Pro feature</div>
+        <p class="text-[13px] text-[#666] max-w-md text-center mb-6">See which products you keep revisiting, get smart buy/wait advice, price volatility analysis, and detailed tracking timelines.</p>
+        <a href="https://YOUR_GUMROAD_URL" target="_blank" class="inline-flex items-center gap-2 bg-[rgba(160,80,255,0.15)] border border-[rgba(160,80,255,0.3)] text-[#a050ff] font-semibold text-[13px] px-5 py-2.5 rounded-lg hover:bg-[rgba(160,80,255,0.25)] transition-all">
+          Upgrade to Pro
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// DEMO DATA
+// placeholder — will be filled via separate JS file
+</script>
+<script src="app.js"></script>
+</body>
+</html>

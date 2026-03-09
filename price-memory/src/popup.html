@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Price Memory</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 360px;
+      min-height: 480px;
+      background: #0a0a0a;
+      color: #e8e8e8;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 13px;
+      overflow-x: hidden;
+    }
+    .header {
+      padding: 20px 18px 16px;
+      background: linear-gradient(135deg, #0a0a0a 0%, #111 100%);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand svg { color: #00ff88; }
+    .brand-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.3px;
+    }
+    .header-toggle {
+      position: relative;
+      width: 40px;
+      height: 22px;
+      background: #333;
+      border-radius: 11px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .header-toggle.active { background: #00ff88; }
+    .header-toggle::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+    .header-toggle.active::after { transform: translateX(18px); }
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+    .stat-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      padding: 10px;
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.2;
+    }
+    .stat-value.green { color: #00ff88; }
+    .stat-label {
+      font-size: 10px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 2px;
+    }
+    .tabs {
+      display: flex;
+      padding: 0 18px;
+      margin-top: 12px;
+      gap: 4px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .tab {
+      padding: 10px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #666;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .tab:hover { color: #999; }
+    .tab.active {
+      color: #00ff88;
+      border-bottom-color: #00ff88;
+    }
+    .content { padding: 12px 18px; }
+    .product-list { display: flex; flex-direction: column; gap: 8px; }
+    .product-item {
+      display: flex;
+      gap: 10px;
+      padding: 10px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .product-item:hover {
+      background: rgba(255,255,255,0.05);
+      border-color: rgba(255,255,255,0.08);
+    }
+    .product-img {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #1a1a1a;
+      flex-shrink: 0;
+    }
+    .product-info { flex: 1; min-width: 0; }
+    .product-title {
+      font-size: 12px;
+      font-weight: 500;
+      color: #ddd;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 2px;
+    }
+    .product-retailer {
+      font-size: 10px;
+      color: #666;
+      margin-bottom: 4px;
+    }
+    .product-prices {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .product-current {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .product-trend {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+    .trend-down { background: rgba(0,255,136,0.1); color: #00ff88; }
+    .trend-up { background: rgba(255,80,80,0.1); color: #ff5050; }
+    .trend-flat { background: rgba(255,255,255,0.05); color: #888; }
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #555;
+    }
+    .empty-icon { font-size: 36px; margin-bottom: 10px; }
+    .empty-title { font-size: 14px; color: #888; margin-bottom: 6px; }
+    .empty-text { font-size: 12px; line-height: 1.5; }
+    .drops-list { display: flex; flex-direction: column; gap: 8px; }
+    .drop-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      background: rgba(0,255,136,0.03);
+      border: 1px solid rgba(0,255,136,0.08);
+      border-radius: 10px;
+    }
+    .drop-info { flex: 1; min-width: 0; }
+    .drop-title {
+      font-size: 12px;
+      color: #ddd;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .drop-detail { font-size: 11px; color: #666; margin-top: 2px; }
+    .drop-badge {
+      background: rgba(0,255,136,0.15);
+      color: #00ff88;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+    .footer {
+      padding: 12px 18px;
+      text-align: center;
+      border-top: 1px solid rgba(255,255,255,0.04);
+    }
+    .footer a {
+      color: #00ff88;
+      text-decoration: none;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .footer a:hover { text-decoration: underline; }
+    .section-header {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #555;
+      margin-bottom: 10px;
+    }
+    .deja-vu {
+      padding: 10px;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, rgba(160,80,255,0.08), rgba(0,200,255,0.08));
+      border: 1px solid rgba(160,80,255,0.15);
+      border-radius: 10px;
+    }
+    .deja-vu-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #a050ff;
+      margin-bottom: 4px;
+    }
+    .deja-vu-text { font-size: 12px; color: #bbb; line-height: 1.4; }
+    .deja-vu-text strong { color: #fff; }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="header">
+      <div class="header-top">
+        <div class="brand">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+          </svg>
+          <span class="brand-name">Price Memory</span>
+        </div>
+        <div class="header-toggle active" id="toggleBtn"></div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-value" id="statTracked">0</div>
+          <div class="stat-label">Tracked</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value green" id="statSaved">$0</div>
+          <div class="stat-label">Saved</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="statAlerts">0</div>
+          <div class="stat-label">Alerts</div>
+        </div>
+      </div>
+    </div>
+    <div class="tabs">
+      <div class="tab active" data-tab="recent">Recent</div>
+      <div class="tab" data-tab="drops">Price Drops</div>
+      <div class="tab" data-tab="watching">Watching</div>
+    </div>
+    <div class="content" id="content">
+      <div class="empty-state">
+        <div class="empty-icon">&#x1f6d2;</div>
+        <div class="empty-title">Start browsing</div>
+        <div class="empty-text">Visit any product page and Price Memory will automatically track prices for you.</div>
+      </div>
+    </div>
+    <div class="footer">
+      <a href="#" id="openDashboard">Open Full Dashboard &rarr;</a>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

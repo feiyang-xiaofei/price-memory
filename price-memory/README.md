@@ -83,7 +83,7 @@ Also works on **Edge** (`edge://extensions`) and **Brave** (`brave://extensions`
 
 The free version includes full price tracking, badge, popup, dashboard overview, product table, and price drops.
 
-**[Price Memory Pro](https://YOUR_GUMROAD_URL)** adds:
+**[Price Memory Pro](https://klinstar.gumroad.com/l/PriceMemory)** adds:
 
 - **Smart Insights** — AI-powered spending analysis, volatility detection, buying advice
 - **Deja Vu** — Deep analysis of products you keep revisiting, with buy/wait recommendations
